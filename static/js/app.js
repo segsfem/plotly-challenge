@@ -1,6 +1,11 @@
 // Using d3 library to read samples json
+function unpack(rows, index) {
+    return rows.map(function(row) {
+        return row[index];
+      });
+}
 function getOtu() {
-    d3.json("/samples.json", function(data) {
+    d3.json("data/samples.json", function(data) {
         // console.log(data);
         var sample_values = unpack(data.samples.sample_values);
         var otu_ids = unpack(data.samples.otu_ids);
