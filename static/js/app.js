@@ -5,8 +5,15 @@ function buildMetadata(sample) {
         // Filter for patient number
         var resultArray = sample_data.filter(sampleObj => sampleObj.id == sample);
         var result = resultArray[0];
-    
+        var panel = d3.select("#sample-metadata");
+        // clear  existing data
+        panel.html("");
+    // Add key and value pair to the panel
+    Object.entries(result).forEach(([key, value]) => {
+        panel.append("h6").text(`${key.toUpperCase()}: ${value}`);
+        });
     });
+}
     return rows.map(function(row) {
         return row[index];
       });
