@@ -1,11 +1,18 @@
 // Using d3 library to read samples json
-function unpack(rows, index) {
+function buildMetadata(sample) {
+    d3.json("samples.json").then((data) => {
+        var sample_data = data.metadata;
+        // Filter for patient number
+        var resultArray = sample_data.filter(sampleObj => sampleObj.id == sample);
+        var result = resultArray[0];
+    
+    });
     return rows.map(function(row) {
         return row[index];
       });
 }
 
-// Submit Button handler
+Submit Button handler
 function handleSubmit() {
     // Prevent the page from refreshing
     Plotly.d3.event.preventDefault();
