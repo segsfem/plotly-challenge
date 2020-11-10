@@ -11,9 +11,23 @@ function handleSubmit() {
     Plotly.d3.event.preventDefault();
 
     // Select the input value from the form
-  var member_id = Plotly.d3.select("#selDataset").node().value;
+  var select_member = Plotly.d3.select("#selDataset").node().value;
+//   // On change to the DOM, call getData()
+// d3.selectAll("#selDataset").on("change", getData);
 
-function getOtu() {
+// // Function called by DOM changes
+// function getData() {
+//     var dropdownMenu = d3.select("#selDataset");
+//     // Assign the value of the dropdown menu option to a variable
+//     var dataset = dropdownMenu.property("value");
+
+  // clear the input value
+  Plotly.d3.select("#selDataset").node().value = "";
+
+  // Build the plot with the search
+  buildPlot(select_member);
+
+function buildPlot() {
     var queryJson = `data/samples.json`
     d3.json(queryJson).then(function(data) {
         // console.log(data);
@@ -46,4 +60,7 @@ var layout = {
 
 };
 Plotly.newPlot("plot", data, layout);
-getOtu();
+}
+
+// Add event listener for submit button
+Plotly.d3.select("#submit").on("click", handleSubmit);
