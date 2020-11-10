@@ -14,67 +14,90 @@ function buildMetadata(sample) {
         });
     });
 }
-    return rows.map(function(row) {
-        return row[index];
-      });
-}
+//     return rows.map(function(row) {
+//         return row[index];
+//       });
+// }
 
-Submit Button handler
-function handleSubmit() {
-    // Prevent the page from refreshing
-    Plotly.d3.event.preventDefault();
-
-    // Select the input value from the form
-  var select_member = Plotly.d3.select("#selDataset").node().value;
-//   // On change to the DOM, call getData()
-// d3.selectAll("#selDataset").on("change", getData);
-
-// // Function called by DOM changes
-// function getData() {
-//     var dropdownMenu = d3.select("#selDataset");
-//     // Assign the value of the dropdown menu option to a variable
-//     var dataset = dropdownMenu.property("value");
-
-  // clear the input value
-  Plotly.d3.select("#selDataset").node().value = "";
-
-  // Build the plot with the search
-  buildPlot(select_member);
-
-function buildPlot() {
-    var queryJson = `data/samples.json`
-    d3.json(queryJson).then(function(data) {
-        // console.log(data);
-        var sample_values = unpack(data.samples.sample_values);
-        var otu_ids = unpack(data.samples.otu_ids);
-        var otu_labels = unpack(data.samples.otu_labels);
+// Build horizontal bar chart
+function buildCharts(sample) {
+    d3.json("samples.json").then((data) => {
+        var samples = data.samples;
+        var resultArray =samples.filter(sampleObj => sampleObj.id == sample);
+        var result = resultArray[0];
+        var otu_ids = result.otu_ids;
+        var otu_labels = result.otu_labels;
+        var sample_values = result.sample_values;
         console.log(sample_values);
-});
-}
-//Build horizintal bar for top 10 OTUs in each individual
-
-var trace1 = {
-    type: "bar",
-    name: otu_labels,
-    x: otu_ids,
-    y: sample_values
-};
-
-var data = [trace1];
-var layout = {
-    title: `Belly Button Biodiversity OTUs`,
-    xaxis: {
-        range: [otu_ids],
-        type: "name"
-    },
-    yaxis: {
-        type: "bar"
-    },
-    showlegend: false
-
-};
-Plotly.newPlot("plot", data, layout);
-}
-
-// Add event listener for submit button
-Plotly.d3.select("#submit").on("click", handleSubmit);
+        var yticks = otu_ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse();
+      var barData = [
+        {
+          y: yticks,
+          x: sample_values.slice(0, 10).reverse(),
+          text: otu_labels.slice(0, 10).reverse(),
+          type: "bar",
+          orientation: "h",
+        }
+      ];
+  
+      var barLayout = {
+        title: "Top 10 Bacteria Cultures Found",
+        margin: { t: 30, l: 150 }
+      };
+  
+      Plotly.newPlot("bar", barData, barLayout);
+      // build bubble chart
+      var bubbleLayout = {
+        title: "Bacteria Cultures Per Sample",
+        margin: { t: 0 },
+        hovermode: "closest",
+        xaxis: { title: "OTU ID" },
+        margin: { t: 30}
+      };
+      var bubbleData = [
+        {
+          x: otu_ids,
+          y: sample_values,
+          text: otu_labels,
+          mode: "markers",
+          marker: {
+            size: sample_values,
+            color: otu_ids,
+            colorscale: "Earth"
+          }
+        }
+      ];
+  
+      Plotly.newPlot("bubble", bubbleData, bubbleLayout);
+    });
+  }
+  function init() {
+    // Grab a reference to the dropdown select element
+    var selector = d3.select("#selDataset");
+  
+    // Use the list of sample names to populate the select options
+    d3.json("samples.json").then((data) => {
+      var sampleNames = data.names;
+  
+      sampleNames.forEach((sample) => {
+        selector
+          .append("option")
+          .text(sample)
+          .property("value", sample);
+      });
+  
+      // Use the first sample from the list to build the initial plots
+      var firstSample = sampleNames[0];
+      buildCharts(firstSample);
+      buildMetadata(firstSample);
+    });
+  }
+  
+  function optionChanged(newSample) {
+    // Fetch new data each time a new sample is selected
+    buildCharts(newSample);
+    buildMetadata(newSample);
+  }
+  
+  // Initialize the dashboard
+  init();
