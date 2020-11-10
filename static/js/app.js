@@ -1,6 +1,6 @@
 // Using d3 library to read samples json
 function buildMetadata(sample) {
-    d3.json("samples.json").then((data) => {
+    d3.json("data/samples.json").then((data) => {
         var sample_data = data.metadata;
         // Filter for patient number
         var resultArray = sample_data.filter(sampleObj => sampleObj.id == sample);
@@ -21,7 +21,7 @@ function buildMetadata(sample) {
 
 // Build horizontal bar chart
 function buildCharts(sample) {
-    d3.json("samples.json").then((data) => {
+    d3.json("data/samples.json").then((data) => {
         var samples = data.samples;
         var resultArray =samples.filter(sampleObj => sampleObj.id == sample);
         var result = resultArray[0];
