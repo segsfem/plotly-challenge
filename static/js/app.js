@@ -41,14 +41,14 @@ function buildCharts(sample) {
       ];
   
       var barLayout = {
-        title: "Top 10 Bacteria Cultures Found",
+        title: "Top 10 OTUs in individual",
         margin: { t: 30, l: 150 }
       };
   
       Plotly.newPlot("bar", barData, barLayout);
       // build bubble chart
       var bubbleLayout = {
-        title: "Bacteria Cultures Per Sample",
+        title: "Bacteria Cultures sample for individual",
         margin: { t: 0 },
         hovermode: "closest",
         xaxis: { title: "OTU ID" },
@@ -71,11 +71,12 @@ function buildCharts(sample) {
       Plotly.newPlot("bubble", bubbleData, bubbleLayout);
     });
   }
+  // Build reference for dropdown menu
   function init() {
-    // Grab a reference to the dropdown select element
+    
     var selector = d3.select("#selDataset");
   
-    // Use the list of sample names to populate the select options
+    // Sample names to populate charts and table
     d3.json("samples.json").then((data) => {
       var sampleNames = data.names;
   
@@ -86,7 +87,7 @@ function buildCharts(sample) {
           .property("value", sample);
       });
   
-      // Use the first sample from the list to build the initial plots
+      // Default sample on opening page
       var firstSample = sampleNames[0];
       buildCharts(firstSample);
       buildMetadata(firstSample);
@@ -99,5 +100,4 @@ function buildCharts(sample) {
     buildMetadata(newSample);
   }
   
-  // Initialize the dashboard
   init();
